@@ -5,6 +5,7 @@ import authRoute from './routes/authRoute.js';
 import postRoutes from './routes/postRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import commentRoute from './routes/commentRoute.js';
+import cors from 'cors';
 dotenv.config();
 
 const app = express();
@@ -12,6 +13,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 connectDB()
+
+app.use(cors())
 
 // Routes
 app.use('/api/auth', authRoute);

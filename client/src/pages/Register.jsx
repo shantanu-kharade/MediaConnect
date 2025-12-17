@@ -4,6 +4,8 @@ import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import { Button } from "../components/ui/button.jsx";
 import { Input } from "../components/ui/input.jsx";
 import { useToast, toast } from "../hooks/use-toast";
+import { useAuth } from "../context/AuthContext.jsx";
+
 const Register = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -13,6 +15,7 @@ const Register = () => {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const { toast } = useToast();
+    const {register} = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,7 +32,8 @@ const Register = () => {
         setIsLoading(true);
 
         try {
-           // logic to register the user goes here (
+            // logic to register the user goes here (
+            await register(name, email, password);
             toast({
                 title: "Account created!",
                 description: "Welcome to media-connect.",
@@ -100,12 +104,12 @@ const Register = () => {
 
                     <form onSubmit={handleSubmit} className="mt-8 space-y-5">
                         <div className="animate-fade-up stagger-2 space-y-2" style={{ opacity: 0 }}>
-                            <label className="text-sm font-medium text-foreground">Full Name</label>
+                            <label className="text-sm font-medium text-foreground">Username</label>
                             <div className="relative">
                                 <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     type="text"
-                                    placeholder="Enter your name"
+                                    placeholder="Enter your username"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     className="pl-10"
@@ -186,7 +190,7 @@ const Register = () => {
                             </label>
                         </div>
 
-                        <Button 
+                        <Button
                             type="submit"
                             variant="gold"
                             size="lg"

@@ -1,9 +1,10 @@
 import { useToast, toast } from "../hooks/use-toast";
+import { Link, useNavigate } from "react-router-dom";
+import { Input } from "../components/ui/input.jsx";
 import { Button } from "../components/ui/button.jsx";
-import {Input } from "../components/ui/input.jsx";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -11,12 +12,15 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
-
+    const { login } = useAuth();
+    const { toast } = useToast();
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
+            // Simulate API call
+            await login(email, password);
             toast({
                 title: "Welcome back!",
                 description: "You've successfully logged in.",
@@ -49,7 +53,7 @@ const Login = () => {
                     </div>
                 </div>
 
-                <div className="animate-fade-up">
+                <div className="animate-fade-up" >
                     <h1 className="font-display text-5xl font-bold leading-tight text-primary-foreground">
                         Connect with the
                         <span className="block bg-gradient-to-r from-gold to-gold-light bg-clip-text text-transparent">
@@ -77,14 +81,14 @@ const Login = () => {
                         <span className="font-display text-xl font-bold text-foreground">media-connect</span>
                     </div>
 
-                    <div className="animate-fade-up stagger-1">
+                    <div className="animate-fade-up stagger-1 "  >
                         <h2 className="font-display text-3xl font-bold text-foreground">Welcome back</h2>
                         <p className="mt-2 text-muted-foreground">
                             Enter your credentials to access your account
                         </p>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+                    <form onSubmit={handleSubmit} className="mt-8 space-y-5"  >
                         <div className="animate-fade-up stagger-2 space-y-2">
                             <label className="text-sm font-medium text-foreground">Email</label>
                             <div className="relative">
@@ -100,7 +104,7 @@ const Login = () => {
                             </div>
                         </div>
 
-                        <div className="animate-fade-up stagger-3 space-y-2">
+                        <div className="animate-fade-up stagger-3 space-y-2"  >
                             <label className="text-sm font-medium text-foreground">Password</label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
@@ -122,7 +126,7 @@ const Login = () => {
                             </div>
                         </div>
 
-                        <div className="animate-fade-up stagger-4 flex items-center justify-between">
+                        <div className="animate-fade-up stagger-4 flex items-center justify-between"  >
                             <label className="flex items-center gap-2">
                                 <input
                                     type="checkbox"

@@ -2,25 +2,26 @@ import { useParams } from "react-router-dom";
 import Layout from "../components/layout/Layout.jsx";
 import ProfileHeader from "../components/ProfileHeader.jsx";
 import PostCard from "../components/PostCard.jsx";
-
 import { Grid3X3, Bookmark, Heart } from "lucide-react";
 import { useState } from "react";
 import { cn } from "../lib/utils.js";
+import {useAuth } from "../context/AuthContext.jsx";
 
 const Profile = () => {
     const { userId } = useParams();
     const [activeTab, setActiveTab] = useState("posts");
-    const posts = []
-    const users = {}
 
-    const user = userId
-        ? users.find((u) => u.id === userId) || "currentUser"
-        : "currentUser";
+
+
+    // const user = userId
+    //     ? users.find((u) => u.id === userId) || currentUser
+    //     : currentUser;
+  
 
     const isOwnProfile = !userId || userId === "";
 
     // Filter posts by user
-    const userPosts = posts.filter((post) => post.author.id === user.id);
+    // const userPosts = posts.filter((post) => post.author.id === user.id);
 
     const tabs = [
         { id: "posts", label: "Posts", icon: Grid3X3 },

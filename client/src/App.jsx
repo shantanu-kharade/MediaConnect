@@ -7,19 +7,23 @@ import Feed from './pages/Feed.jsx'
 import CreatePost from './pages/CreatePost.jsx'
 import Profile from './pages/Profile.jsx'
 import NotFound from './pages/NotFound.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
 const App = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/feed" element={<Feed />} />
-        <Route path="/create-post" element={<CreatePost />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
-  )
+    return (
+        <AuthProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/feed" element={<Feed />} />
+                    <Route path="/create-post" element={<CreatePost />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </BrowserRouter>
+        </AuthProvider>
+
+    )
 }
 
 export default App
