@@ -11,6 +11,7 @@ export const createPost = async (req, res) => {
         }
 
         const newPost = new Post({
+            userId,
             media,
             caption: caption || "",
         });
@@ -35,6 +36,7 @@ export const createPost = async (req, res) => {
 export const getAllPosts = async (req, res) => {
     try {
         const posts = await Post.find({ isDeleted: false })
+            .populate("userId", "username profile")
             .populate("comments")
             .sort({ createdAt: -1 });
 
@@ -52,7 +54,9 @@ export const getPostById = async (req, res) => {
     try {
         const { postId } = req.params;
 
-        const post = await Post.findById(postId).populate("comments");
+        const post = await Post.findById(postId)
+            .populate("userId", "username profile")
+            .populate("comments");
 
         if (!post || post.isDeleted) {
             return res.status(404).json({ message: "Post not found" });
@@ -170,3 +174,4 @@ export const unlikePost = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
