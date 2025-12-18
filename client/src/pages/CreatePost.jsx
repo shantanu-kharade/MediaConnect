@@ -3,17 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { Image, X, Smile, MapPin, Users } from "lucide-react";
 import Layout from "../components/layout/Layout.jsx";
 import { Button } from "../components/ui/button.jsx";
-import { useToast, toast } from "../hooks/use-toast";
+import { toast } from "../hooks/use-toast.js";
 import { cn } from "../lib/utils.js";
+import { useAuth } from "../context/AuthContext.jsx";
+import { useCreatePost } from "../hooks/usePosts.js";
 
 const CreatePost = () => {
   const [content, setContent] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
   const fileInputRef = useRef(null);
-    const user = {}; 
+  const { user } = useAuth();
+  const userProfile = user?.profile || {};
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { mutate: createPost, isPending } = useCreatePost();
 
   const handleImageSelect = (e) => {
     const file = e.target.files?.[0];
@@ -21,6 +24,7 @@ const CreatePost = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setSelectedImage(reader.result);
+        setImageFile(file);
       };
       reader.readAsDataURL(file);
     }
@@ -28,6 +32,7 @@ const CreatePost = () => {
 
   const handleRemoveImage = () => {
     setSelectedImage(null);
+    setImageFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -43,17 +48,33 @@ const CreatePost = () => {
       return;
     }
 
-    setIsLoading(true);
+    if (!selectedImage) {
+      toast({
+        title: "Error",
+        description: "Please add an image to create a post.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    toast({
-      title: "Post created!",
-      description: "Your post has been published successfully.",
-    });
-
-    navigate("/feed");
+    // Create post with media (File object) and caption
+    console.log("Creating post with file:", imageFile, "Caption:", content);
+    createPost(
+      {
+        media: imageFile,
+        caption: content,
+      },
+      {
+        onSuccess: () => {
+          // Clear form
+          setContent("");
+          setSelectedImage(null);
+          setImageFile(null);
+          // Navigate back to feed
+          navigate("/feed");
+        },
+      }
+    );
   };
 
   const characterLimit = 500;
@@ -71,22 +92,22 @@ const CreatePost = () => {
             <Button
               variant="gold"
               onClick={handleSubmit}
-              disabled={isLoading || (!content.trim() && !selectedImage)}
+              disabled={isPending || (!content.trim() && !selectedImage)}
             >
-              {isLoading ? "Publishing..." : "Publish"}
+              {isPending ? "Publishing..." : "Publish"}
             </Button>
           </div>
 
           {/* User Info */}
           <div className="mb-6 flex items-center gap-3">
             <img
-              src={user?.avatar || "https://via.placeholder.com/150"}
+              src={userProfile.avatar || "https://via.placeholder.com/48"}
               alt="Your avatar"
               className="h-12 w-12 rounded-full border-2 border-gold/30 object-cover"
             />
             <div>
               <h3 className="font-medium text-foreground">
-                {user?.displayName || " Name"}
+                {userProfile.firstName || "Name"} {userProfile.lastName || ""}
               </h3>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Users className="h-4 w-4" />
@@ -148,6 +169,7 @@ const CreatePost = () => {
               size="sm"
               onClick={() => fileInputRef.current?.click()}
               className="gap-2 text-muted-foreground hover:text-foreground"
+              disabled={isPending}
             >
               <Image className="h-5 w-5 text-green-500" />
               Photo
@@ -156,6 +178,7 @@ const CreatePost = () => {
               variant="ghost"
               size="sm"
               className="gap-2 text-muted-foreground hover:text-foreground"
+              disabled={isPending}
             >
               <Smile className="h-5 w-5 text-yellow-500" />
               Feeling
@@ -164,6 +187,7 @@ const CreatePost = () => {
               variant="ghost"
               size="sm"
               className="gap-2 text-muted-foreground hover:text-foreground"
+              disabled={isPending}
             >
               <MapPin className="h-5 w-5 text-red-500" />
               Location

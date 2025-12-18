@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, Children } from "react";
-import { authApi, setToken, removeToken } from "../api/api.js";
-
+import { setToken, removeToken } from "../api/api.js";
+import {authApi} from "../api/api.js";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {

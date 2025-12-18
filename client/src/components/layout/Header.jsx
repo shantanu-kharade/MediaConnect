@@ -7,6 +7,8 @@ import { useAuth } from "../../context/AuthContext.jsx";
 const Header = () => {
     const { user, logout } = useAuth()
     const navigate = useNavigate();
+    const userProfile = user?.profile || {};
+    
     const handleLogout = async () => {
         await logout();
         navigate("/");
@@ -66,8 +68,8 @@ const Header = () => {
                     {user && (
                         <Link to="/profile" className="ml-2">
                             <img
-                                src={user.avatar}
-                                alt={user.displayName || "User Avatar"}
+                                src={userProfile.avatar || "https://via.placeholder.com/32"}
+                                alt={userProfile.firstName || "User Avatar"}
                                 className="h-8 w-8 rounded-full border-2 border-gold object-cover transition-transform hover:scale-105"
                             />
                         </Link>

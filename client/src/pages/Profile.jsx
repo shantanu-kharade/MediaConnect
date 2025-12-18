@@ -1,27 +1,48 @@
 import { useParams } from "react-router-dom";
-import Layout from "../components/layout/Layout.jsx";
-import ProfileHeader from "../components/ProfileHeader.jsx";
-import PostCard from "../components/PostCard.jsx";
-import { Grid3X3, Bookmark, Heart } from "lucide-react";
+import Layout from "../components/layout/Layout";
+import ProfileHeader from "../components/ProfileHeader";
+import PostCard from "../components/PostCard";
+import { Grid3X3, Bookmark, Heart, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { cn } from "../lib/utils.js";
-import {useAuth } from "../context/AuthContext.jsx";
+import { cn } from "../lib/utils";
+import { useAuth } from "../context/AuthContext";
+import { useUser } from "../hooks/useUsers";
+import { usePosts } from "../hooks/usePosts.js";
 
 const Profile = () => {
     const { userId } = useParams();
+    const { user: authUser } = useAuth();
     const [activeTab, setActiveTab] = useState("posts");
 
+    // If viewing own profile (no userId or userId matches authUser), use authUser
+    const isOwnProfile = !userId || userId === authUser?._id;
 
+    // Fetch user data from API if viewing another user's profile
+    const { data: fetchedUser, isLoading: userLoading } = useUser(
+        isOwnProfile ? undefined : userId
+    );
 
-    // const user = userId
-    //     ? users.find((u) => u.id === userId) || currentUser
-    //     : currentUser;
-  
+    // Fetch all posts
+    const { data: allPosts, isLoading: postsLoading } = usePosts();
 
-    const isOwnProfile = !userId || userId === "";
+    // Determine which user to display
+    const user = isOwnProfile ? authUser : fetchedUser;
 
     // Filter posts by user
-    // const userPosts = posts.filter((post) => post.author.id === user.id);
+    const userPosts = allPosts?.filter((post) => {
+        const postUserId = typeof post.userId === 'object' ? post.userId._id : post.userId;
+        return postUserId === user?._id;
+    }) || [];
+
+
+    const profileData = {
+        user: user || {},
+        posts: userPosts,
+        followers: user?.followers || [],
+        following: user?.following || [],
+        followerCount: user?.followerCount || 0,
+        followingCount: user?.followingCount || 0,
+    };
 
     const tabs = [
         { id: "posts", label: "Posts", icon: Grid3X3 },
@@ -29,9 +50,37 @@ const Profile = () => {
         { id: "liked", label: "Liked", icon: Heart },
     ];
 
+    if (userLoading || (!isOwnProfile && !user)) {
+        return (
+            <Layout>
+                <div className="flex min-h-[50vh] items-center justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-gold" />
+                </div>
+            </Layout>
+        );
+    }
+
+    if (!user) {
+        return (
+            <Layout>
+                <div className="flex min-h-[50vh] items-center justify-center">
+                    <p className="text-muted-foreground">User not found</p>
+                </div>
+            </Layout>
+        );
+    }
+
     return (
         <Layout>
-            <ProfileHeader user={user} isOwnProfile={isOwnProfile} />
+            <ProfileHeader 
+                user={profileData.user} 
+                isOwnProfile={isOwnProfile}
+                followers={profileData.followers}
+                following={profileData.following}
+                followerCount={profileData.followerCount}
+                followingCount={profileData.followingCount}
+                postsCount={profileData.posts.length}
+            />
 
             <div className="mx-auto max-w-4xl px-4 py-8">
                 {/* Tabs */}
@@ -56,9 +105,13 @@ const Profile = () => {
                 {/* Posts Grid/List */}
                 {activeTab === "posts" && (
                     <div className="space-y-6">
-                        {userPosts.length > 0 ? (
+                        {postsLoading ? (
+                            <div className="flex justify-center py-16">
+                                <Loader2 className="h-8 w-8 animate-spin text-gold" />
+                            </div>
+                        ) : userPosts.length > 0 ? (
                             userPosts.map((post, index) => (
-                                <PostCard key={post.id} post={post} index={index} />
+                                <PostCard key={post._id} post={post} index={index} />
                             ))
                         ) : (
                             <div className="py-16 text-center">

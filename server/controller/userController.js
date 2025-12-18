@@ -235,3 +235,35 @@ export const getAllUsers = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
+export const getSuggestedUsers = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const limit = parseInt(req.query.limit) || 3;
+
+        // Get current user's followings
+        const currentUser = await User.findById(userId).select("followings");
+
+        // Find all users except the current user
+        const suggestedUsers = await User.find({ _id: { $ne: userId } })
+            .select("username profile followerCount followingCount")
+            .limit(limit * 2); // Get extra to randomize
+
+        // Randomize and limit results
+        const randomized = suggestedUsers.sort(() => Math.random() - 0.5).slice(0, limit);
+
+        // Add isFollowing flag to each user
+        const usersWithFollowingStatus = randomized.map(user => ({
+            ...user.toObject(),
+            isFollowing: currentUser.followings.includes(user._id),
+        }));
+
+        res.status(200).json({
+            message: "Suggested users retrieved successfully",
+            users: usersWithFollowingStatus,
+        });
+    } catch (error) {
+        console.error("Get suggested users error:", error);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};

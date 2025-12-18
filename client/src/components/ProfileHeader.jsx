@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { Settings, Edit2, MapPin, Link as LinkIcon, Calendar } from "lucide-react";
 import { Button } from "../components/ui/button.jsx";
+import EditProfileModal from "./EditProfileModal";
+import { useFollowUser } from "../hooks/useUsers.js";
 
 
 
-const ProfileHeader = ({ user, isOwnProfile = false }) => {
-    const [isFollowing, setIsFollowing] = useState(user.isFollowing || false);
+const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], following = [], followerCount = 0, followingCount = 0, postsCount = 0 }) => {
+    const safeUser = user || {};
+    const userProfile = safeUser.profile || {};
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(safeUser.isFollowing || false);
+    const [isFollowPending, setIsFollowPending] = useState(false);
+    const { mutate: followUser } = useFollowUser();
 
     return (
         <div className="animate-fade-up">
@@ -20,8 +27,8 @@ const ProfileHeader = ({ user, isOwnProfile = false }) => {
                     {/* Avatar */}
                     <div className="relative">
                         <img
-                            src={user.avatar}
-                            alt={user.displayName || "User Avatar"}
+                            src={userProfile.avatar || "https://via.placeholder.com/150"}
+                            alt={userProfile.firstName || "User Avatar"}
                             className="h-32 w-32 rounded-full border-4 border-card object-cover shadow-elegant sm:h-40 sm:w-40"
                         />
                         {isOwnProfile && (
@@ -38,16 +45,19 @@ const ProfileHeader = ({ user, isOwnProfile = false }) => {
                     {/* Info */}
                     <div className="mt-4 flex flex-1 flex-col items-center text-center sm:items-start sm:pb-2 sm:text-left">
                         <h1 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-                            {user.displayName || "display name"}
+                            {userProfile.firstName || "First"} {userProfile.lastName || "Last"}
                         </h1>
-                        <p className="text-muted-foreground">@{user.username || "username"}</p>
+                        <p className="text-muted-foreground">@{safeUser.username || "username"}</p>
                     </div>
 
                     {/* Actions */}
                     <div className="mt-4 flex gap-3 sm:mt-0 sm:pb-2">
                         {isOwnProfile ? (
                             <>
-                                <Button variant="outline">
+                                <Button 
+                                    variant="outline"
+                                    onClick={() => setIsEditModalOpen(true)}
+                                >
                                     <Edit2 className="mr-2 h-4 w-4" />
                                     Edit Profile
                                 </Button>
@@ -59,9 +69,24 @@ const ProfileHeader = ({ user, isOwnProfile = false }) => {
                             <>
                                 <Button
                                     variant={isFollowing ? "outline" : "gold"}
-                                    onClick={() => setIsFollowing(!isFollowing)}
+                                    onClick={() => {
+                                        setIsFollowPending(true);
+                                        followUser(
+                                            { userId: safeUser._id, isFollowing },
+                                            {
+                                                onSuccess: () => {
+                                                    setIsFollowing(!isFollowing);
+                                                    setIsFollowPending(false);
+                                                },
+                                                onError: () => {
+                                                    setIsFollowPending(false);
+                                                },
+                                            }
+                                        );
+                                    }}
+                                    disabled={isFollowPending}
                                 >
-                                    {isFollowing ? "Following" : "Follow"}
+                                    {isFollowPending ? "Loading..." : isFollowing ? "Following" : "Follow"}
                                 </Button>
                                 <Button variant="outline">Message</Button>
                             </>
@@ -71,8 +96,8 @@ const ProfileHeader = ({ user, isOwnProfile = false }) => {
 
                 {/* Bio */}
                 <div className="mt-6 max-w-2xl">
-                    <p className="font-body text-foreground">{user.bio}</p>
-                    <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
+                    <p className="font-body text-foreground">{userProfile.bio || ""}</p>
+                    {/* <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                             <MapPin className="h-4 w-4" />
                             Pune, MH, India
@@ -87,31 +112,38 @@ const ProfileHeader = ({ user, isOwnProfile = false }) => {
                             <Calendar className="h-4 w-4" />
                             Joined December 2025
                         </span>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Stats */}
                 <div className="mt-6 flex justify-center gap-8 border-b border-border pb-6 sm:justify-start">
                     <div className="text-center sm:text-left">
                         <p className="font-display text-xl font-bold text-foreground">
-                            20
+                            {postsCount ?? 0}
                         </p>
                         <p className="text-sm text-muted-foreground">Posts</p>
                     </div>
                     <div className="text-center sm:text-left">
                         <p className="font-display text-xl font-bold text-foreground">
-                            4.5k
+                            {followerCount ?? 0}
                         </p>
                         <p className="text-sm text-muted-foreground">Followers</p>
                     </div>
                     <div className="text-center sm:text-left">
                         <p className="font-display text-xl font-bold text-foreground">
-                            1.2k
+                            {followingCount ?? 0}
                         </p>
                         <p className="text-sm text-muted-foreground">Following</p>
                     </div>
                 </div>
             </div>
+
+            {/* Edit Profile Modal */}
+            <EditProfileModal 
+                user={safeUser}
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+            />
         </div>
     );
 };

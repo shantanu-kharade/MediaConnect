@@ -9,10 +9,11 @@ import {
   unlikePost,
 } from "../controller/postController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import { uploadMiddleware, getMediaUrl } from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
-router.post("/create", authMiddleware, createPost);
+router.post("/create", authMiddleware, uploadMiddleware, getMediaUrl, createPost);
 router.get("/all", getAllPosts);
 router.get("/:postId", getPostById);
 router.put("/update/:postId", authMiddleware, updatePost);

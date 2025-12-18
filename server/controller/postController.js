@@ -4,15 +4,22 @@ import User from "../model/userModel.js";
 export const createPost = async (req, res) => {
     try {
         const userId = req.user.id;
-        const { media, caption } = req.body;
+        const { caption } = req.body;
+        const mediaUrl = req.mediaUrl;
 
-        if (!media) {
-            return res.status(400).json({ message: "Media is required" });
+        console.log("Create post - mediaUrl:", mediaUrl); // Debug log
+        console.log("Create post - req.file:", req.file); // Debug log
+
+        if (!mediaUrl) {
+            return res.status(400).json({ 
+                message: "Media is required",
+                debug: { mediaUrl, file: req.file ? "exists" : "missing" }
+            });
         }
 
         const newPost = new Post({
             userId,
-            media,
+            media: mediaUrl,
             caption: caption || "",
         });
 
@@ -37,7 +44,11 @@ export const getAllPosts = async (req, res) => {
     try {
         const posts = await Post.find({ isDeleted: false })
             .populate("userId", "username profile")
-            .populate("comments")
+            .populate({
+                path: "comments",
+                populate: { path: "userId", select: "username profile" }
+            })
+            .populate("likes", "username profile")
             .sort({ createdAt: -1 });
 
         res.status(200).json({
@@ -129,21 +140,32 @@ export const deletePost = async (req, res) => {
 
 export const likePost = async (req, res) => {
     try {
+        const userId = req.user.id;
         const { postId } = req.params;
 
-        const post = await Post.findByIdAndUpdate(
-            postId,
-            { $inc: { likeCount: 1 } },
-            { new: true }
-        );
-
+        const post = await Post.findById(postId);
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
         }
 
+        // Check if user already liked
+        if (post.likes.includes(userId)) {
+            return res.status(400).json({ message: "You already liked this post" });
+        }
+
+        // Add user to likes array and increment count
+        const updatedPost = await Post.findByIdAndUpdate(
+            postId,
+            { 
+                $addToSet: { likes: userId },
+                $inc: { likeCount: 1 }
+            },
+            { new: true }
+        ).populate("likes", "username profile");
+
         res.status(200).json({
             message: "Post liked successfully",
-            post,
+            post: updatedPost,
         });
     } catch (error) {
         console.error("Like post error:", error);
@@ -153,21 +175,32 @@ export const likePost = async (req, res) => {
 
 export const unlikePost = async (req, res) => {
     try {
+        const userId = req.user.id;
         const { postId } = req.params;
 
-        const post = await Post.findByIdAndUpdate(
-            postId,
-            { $inc: { likeCount: -1 } },
-            { new: true }
-        );
-
+        const post = await Post.findById(postId);
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
         }
 
+        // Check if user liked
+        if (!post.likes.includes(userId)) {
+            return res.status(400).json({ message: "You haven't liked this post" });
+        }
+
+        // Remove user from likes array and decrement count
+        const updatedPost = await Post.findByIdAndUpdate(
+            postId,
+            { 
+                $pull: { likes: userId },
+                $inc: { likeCount: -1 }
+            },
+            { new: true }
+        ).populate("likes", "username profile");
+
         res.status(200).json({
             message: "Post unliked successfully",
-            post,
+            post: updatedPost,
         });
     } catch (error) {
         console.error("Unlike post error:", error);
