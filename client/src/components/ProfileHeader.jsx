@@ -54,7 +54,7 @@ const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], foll
                     <div className="mt-4 flex gap-3 sm:mt-0 sm:pb-2">
                         {isOwnProfile ? (
                             <>
-                                <Button 
+                                <Button
                                     variant="outline"
                                     onClick={() => setIsEditModalOpen(true)}
                                 >
@@ -139,8 +139,8 @@ const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], foll
             </div>
 
             {/* Edit Profile Modal */}
-     
-            <EditProfileModal 
+
+            <EditProfileModal
                 user={safeUser}
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}

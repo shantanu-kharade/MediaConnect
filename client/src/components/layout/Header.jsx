@@ -23,7 +23,7 @@ const Header = () => {
                         <span className="font-display text-lg font-bold text-accent-foreground">M</span>
                     </div>
                     <span className="hidden font-display text-xl font-semibold text-foreground sm:block">
-                        media-connect
+                        Media Connect
                     </span>
                 </Link>
 

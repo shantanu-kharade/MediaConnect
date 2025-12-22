@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, Children } from "react";
 import { setToken, removeToken } from "../api/api.js";
-import {authApi} from "../api/api.js";
+import { authApi } from "../api/api.js";
+import { Loader2 } from "lucide-react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -58,6 +59,14 @@ export const AuthProvider = ({ children }) => {
             console.error('Failed to refresh user:', error);
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center bg-background">
+                <Loader2 className="h-10 w-10 animate-spin text-gold" />
+            </div>
+        );
+    }
 
     return (
         <AuthContext.Provider
