@@ -165,3 +165,16 @@ export const useUpdatePost = () => {
     },
   });
 };
+
+
+export const useUserPosts = (userId) => {
+    return useQuery({
+        queryKey: ["posts", userId],
+        queryFn: async () => {
+            // You need an endpoint like GET /api/posts/user/:id
+            const data = await postsApi.getPostsByUser(userId); 
+            return data;
+        },
+        enabled: !!userId
+    });
+};

@@ -8,12 +8,14 @@ import SuggestedUsers from '../components/SuggestedUserCard.jsx';
 import { useAuth } from "../context/AuthContext.jsx";
 import { usePosts } from "../hooks/usePosts.js";
 
+
 const Feed = () => {
     const { user } = useAuth();
     const userProfile = user?.profile || {};
     const [activeTab, setActiveTab] = useState("all");
     
     // Fetch posts
+
     const { data: allPosts = [], isLoading: postsLoading } = usePosts();
     
     // Filter posts based on active tab - all shows all posts
@@ -21,6 +23,8 @@ const Feed = () => {
         const postUserId = typeof post.userId === 'object' ? post.userId._id : post.userId;
         return user?.following?.includes(postUserId);
     });
+
+    
 
     return (
         <Layout>
@@ -115,7 +119,8 @@ const Feed = () => {
                                         <p className="font-display font-bold text-foreground">
                                             {allPosts.filter(p => {
                                                 const pid = typeof p.userId === 'object' ? p.userId._id : p.userId;
-                                                return pid === user?._id;
+                                                const uid = user?._id || user?.id;
+                                                return String(pid) === String(uid);
                                             }).length}
                                         </p>
                                         <p className="text-xs text-muted-foreground">Posts</p>

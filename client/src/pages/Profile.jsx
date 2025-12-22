@@ -14,10 +14,10 @@ const Profile = () => {
     const { user: authUser } = useAuth();
     const [activeTab, setActiveTab] = useState("posts");
 
-    // If viewing own profile (no userId or userId matches authUser), use authUser
+
     const isOwnProfile = !userId || userId === authUser?._id;
 
-    // Fetch user data from API if viewing another user's profile
+
     const { data: fetchedUser, isLoading: userLoading } = useUser(
         isOwnProfile ? undefined : userId
     );
@@ -28,12 +28,22 @@ const Profile = () => {
     // Determine which user to display
     const user = isOwnProfile ? authUser : fetchedUser;
 
-    // Filter posts by user
-    const userPosts = allPosts?.filter((post) => {
-        const postUserId = typeof post.userId === 'object' ? post.userId._id : post.userId;
-        return postUserId === user?._id;
-    }) || [];
 
+
+    const targetUserId = user?._id || user?.id;
+
+    const userPosts = allPosts?.filter((post) => {
+
+        if (!post.userId || !targetUserId) return false;
+
+
+        const postAuthorId = typeof post.userId === 'object'
+            ? post.userId._id
+            : post.userId;
+
+
+        return String(postAuthorId) === String(targetUserId);
+    }) || [];
 
     const profileData = {
         user: user || {},
@@ -72,8 +82,8 @@ const Profile = () => {
 
     return (
         <Layout>
-            <ProfileHeader 
-                user={profileData.user} 
+            <ProfileHeader
+                user={profileData.user}
                 isOwnProfile={isOwnProfile}
                 followers={profileData.followers}
                 following={profileData.following}

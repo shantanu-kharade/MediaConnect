@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { Button } from "./ui/button.jsx";
 import { useUpdateProfile } from "../hooks/useUsers";
@@ -6,6 +7,7 @@ import { useUpdateProfile } from "../hooks/useUsers";
 const EditProfileModal = ({ user = {}, isOpen = false, onClose = () => {} }) => {
     const userProfile = user.profile || {};
     const { mutate: updateProfile, isPending } = useUpdateProfile();
+    const [mounted, setMounted] = useState(false);
 
     const [formData, setFormData] = useState({
         firstName: userProfile.firstName || "",
@@ -13,6 +15,18 @@ const EditProfileModal = ({ user = {}, isOpen = false, onClose = () => {} }) => 
         bio: userProfile.bio || "",
         avatar: userProfile.avatar || "",
     });
+
+    // Handle hydration mismatch (ensure portal only runs on client)
+    useEffect(() => {
+        setMounted(true);
+        // Prevent background scrolling when modal is open
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => { document.body.style.overflow = 'unset'; };
+    }, [isOpen]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -31,17 +45,20 @@ const EditProfileModal = ({ user = {}, isOpen = false, onClose = () => {} }) => 
         });
     };
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-lg bg-card p-6 shadow-lg">
+    // Use createPortal to render this element at the end of the document body
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            {/* Modal Content */}
+            <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-xl bg-card p-6 shadow-2xl border border-border animate-in zoom-in-95 duration-200">
+                
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"
+                    className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                 >
-                    <X className="h-6 w-6" />
+                    <X className="h-5 w-5" />
                 </button>
 
                 <h2 className="font-display text-2xl font-bold text-foreground">
@@ -59,7 +76,7 @@ const EditProfileModal = ({ user = {}, isOpen = false, onClose = () => {} }) => 
                             name="firstName"
                             value={formData.firstName}
                             onChange={handleChange}
-                            className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder-muted-foreground focus:border-gold focus:outline-none"
+                            className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
                             placeholder="Enter first name"
                         />
                     </div>
@@ -74,7 +91,7 @@ const EditProfileModal = ({ user = {}, isOpen = false, onClose = () => {} }) => 
                             name="lastName"
                             value={formData.lastName}
                             onChange={handleChange}
-                            className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder-muted-foreground focus:border-gold focus:outline-none"
+                            className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
                             placeholder="Enter last name"
                         />
                     </div>
@@ -89,7 +106,7 @@ const EditProfileModal = ({ user = {}, isOpen = false, onClose = () => {} }) => 
                             value={formData.bio}
                             onChange={handleChange}
                             rows="4"
-                            className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder-muted-foreground focus:border-gold focus:outline-none"
+                            className="mt-2 w-full resize-none rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
                             placeholder="Write your bio"
                         />
                     </div>
@@ -104,25 +121,26 @@ const EditProfileModal = ({ user = {}, isOpen = false, onClose = () => {} }) => 
                             name="avatar"
                             value={formData.avatar}
                             onChange={handleChange}
-                            className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder-muted-foreground focus:border-gold focus:outline-none"
+                            className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2 text-foreground placeholder-muted-foreground focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
                             placeholder="https://example.com/avatar.jpg"
                         />
                     </div>
 
                     {/* Avatar Preview */}
                     {formData.avatar && (
-                        <div className="mt-4">
-                            <p className="mb-2 text-sm font-medium text-foreground">Preview:</p>
-                            <img
-                                src={formData.avatar}
-                                alt="Avatar Preview"
-                                className="h-24 w-24 rounded-full object-cover"
-                            />
+                        <div className="mt-4 flex justify-center">
+                            <div className="relative">
+                                <img
+                                    src={formData.avatar}
+                                    alt="Avatar Preview"
+                                    className="h-24 w-24 rounded-full object-cover ring-4 ring-border"
+                                />
+                            </div>
                         </div>
                     )}
 
                     {/* Action Buttons */}
-                    <div className="mt-6 flex gap-3">
+                    <div className="mt-6 flex gap-3 pt-2">
                         <Button
                             type="button"
                             variant="outline"
@@ -136,14 +154,15 @@ const EditProfileModal = ({ user = {}, isOpen = false, onClose = () => {} }) => 
                             type="submit"
                             variant="gold"
                             disabled={isPending}
-                            className="flex-1"
+                            className="flex-1 bg-gold text-black hover:bg-gold/90"
                         >
                             {isPending ? "Saving..." : "Save Changes"}
                         </Button>
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

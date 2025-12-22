@@ -61,9 +61,9 @@ const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], foll
                                     <Edit2 className="mr-2 h-4 w-4" />
                                     Edit Profile
                                 </Button>
-                                <Button variant="ghost" size="icon">
+                                {/* <Button variant="ghost" size="icon">
                                     <Settings className="h-5 w-5" />
-                                </Button>
+                                </Button> */}
                             </>
                         ) : (
                             <>
@@ -139,6 +139,7 @@ const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], foll
             </div>
 
             {/* Edit Profile Modal */}
+     
             <EditProfileModal 
                 user={safeUser}
                 isOpen={isEditModalOpen}
