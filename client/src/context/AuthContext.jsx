@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         try {
             await authApi.logout();
-        } catch (`error`) {
+        } catch (error) {
             // Even if logout fails on server, clear local state
         }
         removeToken();

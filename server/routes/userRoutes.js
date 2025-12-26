@@ -9,6 +9,7 @@ import {
   getUserById,
   getAllUsers,
   getSuggestedUsers,
+  searchUser
 } from "../controller/userController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
@@ -21,6 +22,7 @@ router.post("/unfollow/:targetUserId", authMiddleware, unfollowUser);
 router.get("/followers/:userId", getFollowers);
 router.get("/followings/:userId", getFollowings);
 router.get("/suggested", authMiddleware, getSuggestedUsers);
+router.get("/search-users", searchUser)
 router.get("/:userId", getUserById);
 router.get("/", getAllUsers);
 

@@ -1,6 +1,11 @@
 import User from "../model/userModel.js";
 import bcrypt from "bcryptjs";
 
+export const searchUser = async (req, res) =>{
+    const userId = req.user.id
+    
+}
+
 export const updateProfile = async (req, res) => {
     try {
         const userId = req.user.id;
