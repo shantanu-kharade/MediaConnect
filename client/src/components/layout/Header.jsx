@@ -8,7 +8,7 @@ const Header = () => {
     const { user, logout } = useAuth()
     const navigate = useNavigate();
     const userProfile = user?.profile || {};
-    
+
     const handleLogout = async () => {
         await logout();
         navigate("/");
@@ -51,20 +51,15 @@ const Header = () => {
                             <PlusSquare className="h-5 w-5" />
                         </Link>
                     </Button>
-                    <Button variant="ghost" size="icon" asChild className="hover:bg-secondary">
+
+                    {/* <Button variant="ghost" size="icon" asChild className="hover:bg-secondary">
                         <Link to="/profile">
                             <User className="h-5 w-5" />
                         </Link>
-                    </Button>
-                    <div className="ml-2 h-6 w-px bg-border" />
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleLogout}
-                        className="hover:bg-destructive/10 hover:text-destructive"
-                    >
-                        <LogOut className="h-5 w-5" />
-                    </Button>
+                    </Button> */}
+
+                    {/* <div className="ml-2 h-6 w-px bg-border" /> */}
+
                     {user && (
                         <Link to="/profile" className="ml-2">
                             <img
@@ -74,6 +69,15 @@ const Header = () => {
                             />
                         </Link>
                     )}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleLogout}
+                        className="hover:bg-destructive/10 hover:text-destructive"
+                    >
+                        <LogOut className="h-5 w-5" />
+                    </Button>
+
                 </nav>
             </div>
         </header>

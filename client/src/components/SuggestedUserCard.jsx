@@ -38,11 +38,11 @@ const SuggestedUsers = ({ isLoading: externalLoading = false }) => {
                     <p className="text-sm text-muted-foreground">No more suggestions</p>
                 )}
             </div>
-            {suggestedUsers.length > 0 && (
+            {/* {suggestedUsers.length > 0 && (
                 <Button variant="link" className="mt-4 w-full text-gold">
                     See all suggestions
                 </Button>
-            )}
+            )} */}
         </div>
     );
 };

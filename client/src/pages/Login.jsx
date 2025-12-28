@@ -1,4 +1,4 @@
-import { useToast, toast } from "../hooks/use-toast";
+import { useToast} from "../hooks/use-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "../components/ui/input.jsx";
 import { Button } from "../components/ui/button.jsx";
@@ -134,9 +134,9 @@ const Login = () => {
                                 />
                                 <span className="text-sm text-muted-foreground">Remember me</span>
                             </label>
-                            <a href="#" className="text-sm font-medium text-gold hover:underline">
+                            {/* <a href="#" className="text-sm font-medium text-gold hover:underline">
                                 Forgot password?
-                            </a>
+                            </a> */}
                         </div>
 
                         <Button

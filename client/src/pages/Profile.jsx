@@ -56,7 +56,7 @@ const Profile = () => {
 
     const tabs = [
         { id: "posts", label: "Posts", icon: Grid3X3 },
-        { id: "saved", label: "Saved", icon: Bookmark },
+        // { id: "saved", label: "Saved", icon: Bookmark },
         { id: "liked", label: "Liked", icon: Heart },
     ];
 

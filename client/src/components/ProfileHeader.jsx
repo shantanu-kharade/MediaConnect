@@ -31,7 +31,7 @@ const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], foll
                             alt={userProfile.firstName || "User Avatar"}
                             className="h-32 w-32 rounded-full border-4 border-card object-cover shadow-elegant sm:h-40 sm:w-40"
                         />
-                        {isOwnProfile && (
+                        {/* {isOwnProfile && (
                             <Button
                                 variant="elegant"
                                 size="icon"
@@ -39,7 +39,7 @@ const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], foll
                             >
                                 <Edit2 className="h-4 w-4" />
                             </Button>
-                        )}
+                        )} */}
                     </div>
 
                     {/* Info */}
@@ -67,7 +67,7 @@ const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], foll
                             </>
                         ) : (
                             <>
-                                <Button
+                                <Button className="cursor-pointer"
                                     variant={isFollowing ? "outline" : "gold"}
                                     onClick={() => {
                                         setIsFollowPending(true);
@@ -88,7 +88,7 @@ const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], foll
                                 >
                                     {isFollowPending ? "Loading..." : isFollowing ? "Following" : "Follow"}
                                 </Button>
-                                <Button variant="outline">Message</Button>
+                                {/* <Button variant="outline">Message</Button> */}
                             </>
                         )}
                     </div>
