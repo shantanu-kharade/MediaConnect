@@ -1,9 +1,10 @@
 import User from "../model/userModel.js";
 import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
 
-export const searchUser = async (req, res) =>{
+export const searchUser = async (req, res) => {
     const userId = req.user.id
-    
+
 }
 
 export const updateProfile = async (req, res) => {
@@ -86,6 +87,10 @@ export const followUser = async (req, res) => {
         const userId = req.user.id;
         const { targetUserId } = req.params;
 
+        if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+            return res.status(400).json({ message: "Invalid user ID" });
+        }
+
         if (userId === targetUserId) {
             return res.status(400).json({ message: "Cannot follow yourself" });
         }
@@ -119,6 +124,10 @@ export const unfollowUser = async (req, res) => {
     try {
         const userId = req.user.id;
         const { targetUserId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
+            return res.status(400).json({ message: "Invalid user ID" });
+        }
 
         if (userId === targetUserId) {
             return res.status(400).json({ message: "Cannot unfollow yourself" });

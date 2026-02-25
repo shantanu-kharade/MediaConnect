@@ -6,13 +6,34 @@ import { useFollowUser } from "../hooks/useUsers.js";
 
 
 
-const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], following = [], followerCount = 0, followingCount = 0, postsCount = 0 }) => {
+const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], following = [], followerCount = 0, followingCount = 0, postsCount = 0, isFollowing: initialIsFollowing = false }) => {
     const safeUser = user || {};
     const userProfile = safeUser.profile || {};
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isFollowing, setIsFollowing] = useState(safeUser.isFollowing || false);
-    const [isFollowPending, setIsFollowPending] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
+    const [isPending, setIsPending] = useState(false);
     const { mutate: followUser } = useFollowUser();
+
+    const handleFollow = async () => {
+        if (!safeUser._id) return;
+        setIsPending(true);
+        try {
+            followUser(
+                { userId: safeUser._id, isFollowing },
+                {
+                    onSuccess: () => {
+                        setIsFollowing(!isFollowing);
+                        setIsPending(false);
+                    },
+                    onError: () => {
+                        setIsPending(false);
+                    },
+                }
+            );
+        } catch (error) {
+            setIsPending(false);
+        }
+    };
 
     return (
         <div className="animate-fade-up">
@@ -69,24 +90,10 @@ const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], foll
                             <>
                                 <Button className="cursor-pointer"
                                     variant={isFollowing ? "outline" : "gold"}
-                                    onClick={() => {
-                                        setIsFollowPending(true);
-                                        followUser(
-                                            { userId: safeUser._id, isFollowing },
-                                            {
-                                                onSuccess: () => {
-                                                    setIsFollowing(!isFollowing);
-                                                    setIsFollowPending(false);
-                                                },
-                                                onError: () => {
-                                                    setIsFollowPending(false);
-                                                },
-                                            }
-                                        );
-                                    }}
-                                    disabled={isFollowPending}
+                                    onClick={handleFollow}
+                                    disabled={isPending}
                                 >
-                                    {isFollowPending ? "Loading..." : isFollowing ? "Following" : "Follow"}
+                                    {isPending ? "Loading..." : isFollowing ? "Following" : "Follow"}
                                 </Button>
                                 {/* <Button variant="outline">Message</Button> */}
                             </>
@@ -110,7 +117,7 @@ const ProfileHeader = ({ user = null, isOwnProfile = false, followers = [], foll
                         </span>
                         <span className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
-                            Joined December 2025
+                            Joined December 2026
                         </span>
                     </div> */}
                 </div>

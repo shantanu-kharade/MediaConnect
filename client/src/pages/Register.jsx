@@ -80,7 +80,7 @@ const Register = () => {
                 </div>
 
                 <p className="text-sm text-primary-foreground/50">
-                    © 2025 media-connect. All rights reserved.
+                    © 2026 media-connect. All rights reserved.
                 </p>
             </div>
 

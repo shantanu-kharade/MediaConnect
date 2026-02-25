@@ -154,7 +154,7 @@ const Feed = () => {
                                     <span>·</span>
                                     <a href="#" className="hover:underline">Terms</a>
                                 </div>
-                                <p className="mt-2">© 2025 media-connect</p>
+                                <p className="mt-2">© 2026 media-connect</p>
                             </div>
                         </div>
                     </div>

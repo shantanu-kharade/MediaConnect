@@ -28,7 +28,10 @@ const Profile = () => {
     // Determine which user to display
     const user = isOwnProfile ? authUser : fetchedUser;
 
-
+    const isFollowing = user?.followers?.some(follower => {
+        const followerId = typeof follower === 'object' ? follower._id : follower;
+        return String(followerId) === String(authUser?._id);
+    }) || false;
 
     const targetUserId = user?._id || user?.id;
 
@@ -60,6 +63,8 @@ const Profile = () => {
         { id: "liked", label: "Liked", icon: Heart },
     ];
 
+
+
     if (userLoading || (!isOwnProfile && !user)) {
         return (
             <Layout>
@@ -83,6 +88,7 @@ const Profile = () => {
     return (
         <Layout>
             <ProfileHeader
+                key={targetUserId}
                 user={profileData.user}
                 isOwnProfile={isOwnProfile}
                 followers={profileData.followers}
@@ -90,6 +96,7 @@ const Profile = () => {
                 followerCount={profileData.followerCount}
                 followingCount={profileData.followingCount}
                 postsCount={profileData.posts.length}
+                isFollowing={isFollowing}
             />
 
             <div className="mx-auto max-w-4xl px-4 py-8">

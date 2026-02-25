@@ -10,11 +10,17 @@ export const createPost = async (req, res) => {
         console.log("Create post - mediaUrl:", mediaUrl); // Debug log
         console.log("Create post - req.file:", req.file); // Debug log
 
-        if (!mediaUrl) {
-            return res.status(400).json({ 
-                message: "Media is required",
-                debug: { mediaUrl, file: req.file ? "exists" : "missing" }
-            });
+        // if (!mediaUrl) {
+        //     return res.status(400).json({ 
+        //         message: "Media is required",
+        //         debug: { mediaUrl, file: req.file ? "exists" : "missing" }
+        //     });
+        // }
+
+        if(!mediaUrl && !caption){
+            return res.status(400).json({
+                message: "Media or caption is required"
+            })
         }
 
         const newPost = new Post({

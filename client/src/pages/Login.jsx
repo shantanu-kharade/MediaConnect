@@ -6,7 +6,11 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 
+
 const Login = () => {
+
+
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -14,12 +18,18 @@ const Login = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
     const { toast } = useToast();
+
+    const token = localStorage.getItem("token");
+    if (token) {
+        navigate("/feed");
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
-            // Simulate API call
+            
             await login(email, password);
             toast({
                 title: "Welcome back!",
@@ -66,7 +76,7 @@ const Login = () => {
                 </div>
 
                 <p className="text-sm text-primary-foreground/50">
-                    © 2025 media-connect. All rights reserved.
+                    © 2026 media-connect. All rights reserved.
                 </p>
             </div>
 

@@ -10,6 +10,7 @@ const Header = () => {
     const userProfile = user?.profile || {};
 
     const handleLogout = async () => {
+        localStorage.removeItem("token");
         await logout();
         navigate("/");
     };

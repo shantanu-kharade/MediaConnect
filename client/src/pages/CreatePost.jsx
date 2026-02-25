@@ -48,15 +48,6 @@ const CreatePost = () => {
             return;
         }
 
-        if (!selectedImage) {
-            toast({
-                title: "Error",
-                description: "Please add an image to create a post.",
-                variant: "destructive",
-            });
-            return;
-        }
-
         // Create post with media (File object) and caption
         console.log("Creating post with file:", imageFile, "Caption:", content);
         createPost(

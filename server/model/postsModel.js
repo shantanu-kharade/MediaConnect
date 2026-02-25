@@ -9,7 +9,7 @@ const postSchema = new mongoose.Schema(
         },
         media: {
             type: String,
-            required: true,
+            required: false,
         },
         caption: {
             type: String,
