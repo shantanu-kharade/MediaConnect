@@ -7,6 +7,10 @@ Media-Connect is a modern, full-stack social media application built using the M
 
 **View the hosted project here:** [Media-Connect Website](https://media-connect-social.vercel.app/)
 
+## ℹ️ Images
+
+![alt text](image-2.png)
+
 ## ✨ Key Features
 
 *   **User Authentication:** Secure login and registration utilizing JSON Web Tokens (JWT) and bcrypt for password hashing.
