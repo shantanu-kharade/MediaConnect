@@ -16,6 +16,12 @@ const Feed = () => {
     
     // Fetch posts
 
+    const token  = localStorage.getItem("authToken");
+    if (!token) {
+        navigate("/login");
+    }
+
+
     const { data: allPosts = [], isLoading: postsLoading } = usePosts();
     
     // Filter posts based on active tab - all shows all posts

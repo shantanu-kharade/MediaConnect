@@ -1,4 +1,4 @@
-import { useToast} from "../hooks/use-toast";
+import { useToast } from "../hooks/use-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "../components/ui/input.jsx";
 import { Button } from "../components/ui/button.jsx";
@@ -9,8 +9,6 @@ import { useAuth } from "../context/AuthContext.jsx";
 
 const Login = () => {
 
-
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -19,17 +17,16 @@ const Login = () => {
     const { login } = useAuth();
     const { toast } = useToast();
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("authToken");
     if (token) {
         navigate("/feed");
     }
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
-            
+
             await login(email, password);
             toast({
                 title: "Welcome back!",
@@ -47,6 +44,9 @@ const Login = () => {
             setIsLoading(false);
         }
     };
+
+
+
 
     return (
         <div className="flex min-h-screen  text-white ">
